@@ -1,6 +1,8 @@
 from rembg import remove
 from typing import Any
 from typing import Tuple
+from typing import List
+from typing import Union
 
 import os
 import cv2
@@ -25,7 +27,6 @@ def zoom_mask(mask_img: Any, zoom_factor: float = 1.05, angle: int = 0, zoom_opt
         centerY, centerX = [i / 2 for i in mask_img.shape[:]]
         rot_mat = cv2.getRotationMatrix2D((centerX, centerY), angle, zoom_factor)
         result = cv2.warpAffine(mask_img, rot_mat, (width, height), flags=cv2.INTER_LANCZOS4)
-        print(mask_img.shape[1::-1], height, width)
 
     elif (zoom_option == 2):
         centerX, centerY = int(height / 2), int(width / 2)
@@ -62,7 +63,9 @@ def overlay_img(base_img: Any, overlay_img: Any, mask: Any) -> Any:
     return overlaid_img
 
 
-def add_img_stroke(model_session: Any, in_file_path: str, color: Tuple[int, int, int], zooming_factor: float) -> None:
+def add_img_stroke(model_session: Any, in_file_path: str, out_file_path: str,
+                   color: Union[List[int], Tuple[int, int, int]],
+                   zooming_factor: float) -> None:
     global visual_debug
 
     RChannel, GChannel, BChannel = color
@@ -85,3 +88,5 @@ def add_img_stroke(model_session: Any, in_file_path: str, color: Tuple[int, int,
         cv2.imwrite(os.path.join('debug', 'd003_unet2_mask_scaled_image.png'), img_scale_mask)
         cv2.imwrite(os.path.join('debug', 'd004_overlay_mask_image.png'), Img_overlay_mask)
         cv2.imwrite(os.path.join('debug', 'd005_overlay_image.png'), img_blended)
+
+    cv2.imwrite(out_file_path, img_blended)
