@@ -77,7 +77,7 @@ def parse_args() -> Any:
     parser = argparse.ArgumentParser(description='Add outline stroking to the human image for appealing visual')
     parser.add_argument('-m', '--model_name', type=str, default='u2net_human_seg',
                         help='key in the supported model name [u2net_human_seg, u2netp]')
-    parser.add_argument('-d', '--input_folder', type=str, default='sampley', help='input directory path.')
+    parser.add_argument('-d', '--input_folder', type=str, default='sample', help='input directory path.')
     parser.add_argument('-i', '--input_file', default='sample/me.png',
                         type=str, help='image file with human to be stroked.')
     parser.add_argument('-o', '--output_folder', type=str,
