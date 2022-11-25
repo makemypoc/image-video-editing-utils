@@ -2,6 +2,10 @@
 
  This repo helps editing the images and or videos. There are some utilities available for making social media content look appealing.
 
+ [Image stroke feature explanation video in English](https://youtu.be/vCa1K3FmNr8)
+
+ [Image stroke feature explanation video in Tamil](https://youtu.be/it19s6FjSRA)
+
 ## Package Name: socialmediautils
 
  This package implements the various utilities for making social media content
