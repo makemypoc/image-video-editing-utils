@@ -1,3 +1,5 @@
+""" This module implements the outline stroke feature for human in the given images
+"""
 from rembg import remove
 from typing import Any
 from typing import Tuple
@@ -12,6 +14,12 @@ visual_debug = False
 
 
 def enable_visual_debug(enable: bool) -> None:
+    """
+    This function invokes the visual debug infomration to be stored or not as image files.
+
+    :param enable: It activates the visual debugging for testin purpose.
+    :type enable: bool
+    """
     global visual_debug
     visual_debug = enable
     if (visual_debug is True):
@@ -20,7 +28,24 @@ def enable_visual_debug(enable: bool) -> None:
 
 
 def zoom_mask(mask_img: Any, zoom_factor: float = 1.05, angle: int = 0, zoom_option: int = 1) -> Any:
+    """
+    It scales the mask image to the given zoom factor as per the zoom option algorithm. This scaling
+    is center focused regardles of the zoom option provided.
 
+    :param mask_img: Numpy array that holds the mask image
+    :type mask_img: Any
+    :param zoom_factor: Scaling factor of the image. If 2 is provided, it scales the image twice,
+    defaults to 1.05
+    :type zoom_factor: float, optional
+    :param angle: Rotating angle of the image for the zoom option 1, defaults to 0
+    :type angle: int, optional
+    :param zoom_option: It gives the option to select the zooming algorithm. If 1 then it is zooming
+    with rotation of the image capability. If 2 then it just zooming. In both cases the zooming is
+    centered around the midpoint of the image, defaults to 1
+    :type zoom_option: int, optional
+    :return: Returns the scaled mask image
+    :rtype: Any
+    """
     height, width = mask_img.shape
 
     if (zoom_option == 1):
@@ -45,6 +70,18 @@ def zoom_mask(mask_img: Any, zoom_factor: float = 1.05, angle: int = 0, zoom_opt
 
 
 def overlay_img(base_img: Any, overlay_img: Any, mask: Any) -> Any:
+    """
+    It merges the background and the forground based on the orignal, colored and mask image.
+
+    :param base_img: This image is the original image to be processed
+    :type base_img: Any
+    :param overlay_img: This is the generated image based on the stroke color
+    :type overlay_img: Any
+    :param mask: This image is the mask image that holds the stroke area
+    :type mask: Any
+    :return: It returns the merged image
+    :rtype: Any
+    """
     global visual_debug
 
     fg_img = cv2.bitwise_or(overlay_img, overlay_img, mask=mask)
@@ -66,6 +103,22 @@ def overlay_img(base_img: Any, overlay_img: Any, mask: Any) -> Any:
 def add_img_stroke(model_session: Any, in_file_path: str, out_file_path: str,
                    color: Union[List[int], Tuple[int, int, int]],
                    zooming_factor: float) -> None:
+    """
+    This utility function implements the outline stroking feature for any human in the given
+    image.
+
+    :param model_session: The session that holds what unet2 familiy of the model to be used
+    :type model_session: Any
+    :param in_file_path: It is the input path of the file to be processed
+    :type in_file_path: str
+    :param out_file_path: It is the ouput path where the merged image has to be placed
+    :type out_file_path: str
+    :param color: This color indicated the color of the stroke area
+    :type color: Union[List[int], Tuple[int, int, int]]
+    :param zooming_factor: It is the scaling factor to determing the outline stroke thickness.
+    Always use the value between 1.01 to 1.09
+    :type zooming_factor: float
+    """
     global visual_debug
 
     RChannel, GChannel, BChannel = color

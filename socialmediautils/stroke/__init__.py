@@ -1,3 +1,5 @@
+""" This module implements the outline stroke feature for human in the given images
+"""
 from typing import Any
 from .stroke_img import add_img_stroke
 from .stroke_img import enable_visual_debug

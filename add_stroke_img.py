@@ -1,3 +1,5 @@
+""" This module is the usage example of the outline stroke feature for human in the given images
+"""
 from socialmediautils import stroke
 from typing import Any
 
@@ -10,7 +12,14 @@ from datetime import datetime
 
 
 def main(args: Any) -> None:
+    '''
+    This function executes the process for making stroke over the border of human for either a
+    single image or the given set of images in the folder
 
+    :param args: It holds the user given arguments for controlling the program flow as per the
+    user expectation
+    :type args: Any
+    '''
     image_names: list = []
     input_images: list = []
     output_images: list = []
@@ -29,8 +38,8 @@ def main(args: Any) -> None:
             print('This input file is not valid! Please check the correct path with file name')
             exit()
         else:
-            input_images[0] = input_file
-            output_images[0] = os.path.join(output_folder_path, os.path.basename(input_file))
+            input_images.append(input_file)
+            output_images.append(os.path.join(output_folder_path, os.path.basename(input_file)))
 
     elif input_folder_path != '':
 
@@ -51,22 +60,25 @@ def main(args: Any) -> None:
         stroke.enable_visual_debug(True)
 
     for img_index in range(total_processing_images):
-        print('\nStarted processing file named {} {}/{}'.format(image_names[img_index], img_index + 1,
+        print('\nStarted processing file named {} {}/{}'.format(input_images[img_index], img_index + 1,
               total_processing_images))
 
         stroke_color = np.interp(Color(args.color).get_rgb(), [0, 1], [0, 255]).astype('uint8').tolist()
 
-        stroke.add_img_stroke(model_session, input_images[img_index], output_images[img_index], stroke_color, 1.07)
+        stroke.add_img_stroke(model_session, input_images[img_index], output_images[img_index], stroke_color, 1.03)
 
 
 def parse_args() -> Any:
-    """Parse input arguments."""
+    """This function recieves and parses the input arguments.
 
+    :return: Argument parser that holds the user input to this program
+    :rtype: Any
+    """
     parser = argparse.ArgumentParser(description='Add outline stroking to the human image for appealing visual')
     parser.add_argument('-m', '--model_name', type=str, default='u2net_human_seg',
                         help='key in the supported model name [u2net_human_seg, u2netp]')
-    parser.add_argument('-d', '--input_folder', type=str, default='sample', help='input directory path.')
-    parser.add_argument('-i', '--input_file', default='sample/me.jpg',
+    parser.add_argument('-d', '--input_folder', type=str, default='sampley', help='input directory path.')
+    parser.add_argument('-i', '--input_file', default='sample/me.png',
                         type=str, help='image file with human to be stroked.')
     parser.add_argument('-o', '--output_folder', type=str,
                         default=datetime.now().strftime("%Y%m%d-%H%M%S"), help='CSV data file name with full path.')
@@ -81,5 +93,7 @@ def parse_args() -> Any:
 
 
 if __name__ == '__main__':
-    """ Entry point """
+    """
+    This is the entry point of the program
+    """
     main(parse_args())
