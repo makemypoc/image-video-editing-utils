@@ -1,4 +1,5 @@
-""" This module is the usage example of the outline stroke feature for human in the given images
+""" This module is the usage example of the outline stroke feature for human in the given images and superimpose
+the stroked human with the background image
 """
 from socialmediautils import stroke
 from typing import Any
@@ -27,6 +28,7 @@ def main(args: Any) -> None:
 
     input_folder_path = args.input_folder
     input_file = args.input_file
+    bg_file = args.bg_file
     output_folder_path = args.output_folder
 
     if args.model_name not in ['u2net_human_seg', 'u2netp']:
@@ -50,6 +52,11 @@ def main(args: Any) -> None:
                 input_images.append(os.path.join(input_folder_path, file))
                 output_images.append(os.path.join(output_folder_path, file))
 
+    if bg_file != '':
+        if not os.path.isfile(bg_file):
+            print('This background image file is not valid! Please check the correct path with file name')
+            exit()
+
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 
@@ -65,7 +72,11 @@ def main(args: Any) -> None:
 
         stroke_color = np.interp(Color(args.color).get_rgb(), [0, 1], [0, 255]).astype('uint8').tolist()
 
-        stroke.add_img_stroke(model_session, input_images[img_index], output_images[img_index], stroke_color, 1.03)
+        if bg_file != '':
+            stroke.add_img_stroke_with_bg(model_session, input_images[img_index], bg_file,
+                                          output_images[img_index], stroke_color, 1.03)
+        else:
+            stroke.add_img_stroke(model_session, input_images[img_index], output_images[img_index], stroke_color, 1.03)
 
 
 def parse_args() -> Any:
@@ -79,6 +90,8 @@ def parse_args() -> Any:
                         help='key in the supported model name [u2net_human_seg, u2netp]')
     parser.add_argument('-d', '--input_folder', type=str, default='', help='input directory path.')
     parser.add_argument('-i', '--input_file', default='sample/me.png',
+                        type=str, help='background image file to be superimposed.')
+    parser.add_argument('-b', '--bg_file', default='',
                         type=str, help='image file with human to be stroked.')
     parser.add_argument('-o', '--output_folder', type=str,
                         default=datetime.now().strftime("%Y%m%d-%H%M%S"), help='CSV data file name with full path.')

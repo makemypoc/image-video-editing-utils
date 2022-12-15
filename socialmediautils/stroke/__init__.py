@@ -2,6 +2,7 @@
 """
 from typing import Any
 from .stroke_img import add_img_stroke
+from .stroke_img import add_img_stroke_with_bg
 from .stroke_img import enable_visual_debug
 
 

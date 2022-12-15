@@ -100,6 +100,47 @@ def overlay_img(base_img: Any, overlay_img: Any, mask: Any) -> Any:
     return overlaid_img
 
 
+def overlay_img_with_bg(base_img: Any, bg_img: Any, stroke_color_img: Any, base_mask: Any, bg_inv_mask: Any,
+                        stroke_mask: Any) -> Any:
+    """
+    It merges the background and the forground based on the orignal, backgound, colored and mask images.
+
+    :param base_img: This image that holds the human in it.
+    :type base_img: Any
+    :param bg_img: It is the image that holds the scenic background.
+    :type bg_img: Any
+    :param stroke_color_img: This is the colored image based on stroke color.
+    :type stroke_color_img: Any
+    :param base_mask: This is the mask image which is the segmented version of human without scaling
+    :type base_mask: Any
+    :param bg_inv_mask: This is the mask image which is the segmented version of human with scaling
+    :type bg_inv_mask: Any
+    :param stroke_mask: it is the mask of the stroke area
+    :type stroke_mask: Any
+    :return: It returns the final image that has both stroked human with background
+    :rtype: Any
+    """
+    global visual_debug
+
+    stroke_img = cv2.bitwise_or(stroke_color_img, stroke_color_img, mask=stroke_mask)
+    human_img = cv2.bitwise_or(base_img, base_img, mask=base_mask)
+    stroke_human_img = cv2.bitwise_or(human_img, stroke_img)
+
+    bg_mask = cv2.bitwise_not(bg_inv_mask)
+    bg_img_filtered = cv2.bitwise_or(bg_img, bg_img, mask=bg_mask)
+
+    overlaid_img = cv2.bitwise_or(stroke_human_img, bg_img_filtered)
+
+    if (visual_debug is True):
+        cv2.imwrite(os.path.join('debug', 'd004_01_foreground_stroke_image.png'), stroke_img)
+        cv2.imwrite(os.path.join('debug', 'd004_02_foreground_human_image.png'), human_img)
+        cv2.imwrite(os.path.join('debug', 'd004_03_background_stroke_human_image.png'), stroke_human_img)
+        cv2.imwrite(os.path.join('debug', 'd004_04_background_image_mask.png'), bg_mask)
+        cv2.imwrite(os.path.join('debug', 'd004_04_background_image.png'), bg_img)
+
+    return overlaid_img
+
+
 def add_img_stroke(model_session: Any, in_file_path: str, out_file_path: str,
                    color: Union[List[int], Tuple[int, int, int]],
                    zooming_factor: float) -> None:
@@ -124,11 +165,11 @@ def add_img_stroke(model_session: Any, in_file_path: str, out_file_path: str,
     RChannel, GChannel, BChannel = color
 
     img_org = cv2.imread(in_file_path)
-    Img_org_mask = remove(img_org, session=model_session, alpha_matting=False, only_mask=True,
+    img_org_mask = remove(img_org, session=model_session, alpha_matting=False, only_mask=True,
                           post_process_mask=True)
 
-    img_scale_mask = zoom_mask(Img_org_mask, zooming_factor)
-    Img_overlay_mask = cv2.bitwise_xor(Img_org_mask, img_scale_mask)
+    img_scale_mask = zoom_mask(img_org_mask, zooming_factor)
+    Img_overlay_mask = cv2.bitwise_xor(img_org_mask, img_scale_mask)
 
     img_blend_color = np.zeros([img_org.shape[0], img_org.shape[1], 3], dtype=np.uint8)
     img_blend_color[:, :] = [BChannel, GChannel, RChannel]
@@ -137,9 +178,60 @@ def add_img_stroke(model_session: Any, in_file_path: str, out_file_path: str,
 
     if (visual_debug is True):
         cv2.imwrite(os.path.join('debug', 'd001_overlay_image.png'), img_blend_color)
-        cv2.imwrite(os.path.join('debug', 'd002_unet2_mask_image.png'), Img_org_mask)
+        cv2.imwrite(os.path.join('debug', 'd002_unet2_mask_image.png'), img_org_mask)
         cv2.imwrite(os.path.join('debug', 'd003_unet2_mask_scaled_image.png'), img_scale_mask)
         cv2.imwrite(os.path.join('debug', 'd004_overlay_mask_image.png'), Img_overlay_mask)
+        cv2.imwrite(os.path.join('debug', 'd005_overlay_image.png'), img_blended)
+
+    cv2.imwrite(out_file_path, img_blended)
+
+
+def add_img_stroke_with_bg(model_session: Any, in_file_path: str, bg_file_path: str,
+                           out_file_path: str,
+                           color: Union[List[int], Tuple[int, int, int]],
+                           zooming_factor: float) -> None:
+    """
+    This utility function implements the outline stroking feature for any human and superimpose the stroked
+    human with scenic (sort of) background image.
+
+    :param model_session: The session that holds what unet2 familiy of the model to be used
+    :type model_session: Any
+    :param in_file_path: It is the input path of the file with human image to be processed
+    :type in_file_path: str
+    :param bg_file_path: This image path that holds the scenic (or some sort of) backgorund information
+    :type bg_file_path: str
+    :param out_file_path: It is the ouput path where the merged image has to be placed
+    :type out_file_path: str
+    :param color: This color indicated the color of the stroke area
+    :type color: Union[List[int], Tuple[int, int, int]]
+    :param zooming_factor: It is the scaling factor to determing the outline stroke thickness.
+    Always use the value between 1.01 to 1.09
+    :type zooming_factor: float
+    """
+    global visual_debug
+
+    RChannel, GChannel, BChannel = color
+
+    img_org = cv2.imread(in_file_path)
+    Img_org_mask = remove(img_org, session=model_session, alpha_matting=False, only_mask=True,
+                          post_process_mask=True)
+
+    img_scale_mask = zoom_mask(Img_org_mask, zooming_factor)
+    img_overlay_mask = cv2.bitwise_xor(Img_org_mask, img_scale_mask)
+
+    img_blend_color = np.zeros([img_org.shape[0], img_org.shape[1], 3], dtype=np.uint8)
+    img_blend_color[:, :] = [BChannel, GChannel, RChannel]
+
+    img_bg = cv2.resize(cv2.imread(bg_file_path), (img_org.shape[1], img_org.shape[0]),
+                        interpolation=cv2.INTER_LINEAR)
+
+    img_blended = overlay_img_with_bg(img_org, img_bg, img_blend_color, Img_org_mask, img_scale_mask, img_overlay_mask)
+
+    if (visual_debug is True):
+        cv2.imwrite(os.path.join('debug', 'd001_overlay_image.png'), img_blend_color)
+        cv2.imwrite(os.path.join('debug', 'd002_unet2_mask_image.png'), Img_org_mask)
+        cv2.imwrite(os.path.join('debug', 'd003_unet2_mask_scaled_image.png'), img_scale_mask)
+        cv2.imwrite(os.path.join('debug', 'd004_stroke_mask_image.png'), img_overlay_mask)
         cv2.imwrite(os.path.join('debug', 'd005_overlay_image.png'), img_blended)
 
     cv2.imwrite(out_file_path, img_blended)
