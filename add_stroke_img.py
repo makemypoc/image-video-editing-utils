@@ -7,6 +7,7 @@ from typing import Any
 import argparse
 import os
 import numpy as np
+import random
 
 from colour import Color
 from datetime import datetime
@@ -23,11 +24,14 @@ def main(args: Any) -> None:
     '''
     image_names: list = []
     input_images: list = []
+    bg_images: list = []
     output_images: list = []
+    total_bg_images_max_index = 0
     total_processing_images = 0
 
     input_folder_path = args.input_folder
     input_file = args.input_file
+    bg_folder_path = args.bg_folder
     bg_file = args.bg_file
     output_folder_path = args.output_folder
 
@@ -56,11 +60,21 @@ def main(args: Any) -> None:
         if not os.path.isfile(bg_file):
             print('This background image file is not valid! Please check the correct path with file name')
             exit()
+        else:
+            bg_images.append(bg_file)
+
+    elif bg_folder_path != '':
+        bg_names = os.listdir(bg_folder_path)
+
+        for file in bg_names:
+            if file.endswith(('png', 'jpg', 'jpeg')):
+                bg_images.append(os.path.join(bg_folder_path, file))
 
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 
     total_processing_images = len(input_images)
+    total_bg_images_max_index = len(bg_images)
 
     model_session = stroke.get_stroke_session(args.model_name)
     if args.vdebug:
@@ -72,8 +86,9 @@ def main(args: Any) -> None:
 
         stroke_color = np.interp(Color(args.color).get_rgb(), [0, 1], [0, 255]).astype('uint8').tolist()
 
-        if bg_file != '':
-            stroke.add_img_stroke_with_bg(model_session, input_images[img_index], bg_file,
+        if len(bg_images) != 0:
+            stroke.add_img_stroke_with_bg(model_session, input_images[img_index],
+                                          bg_images[random.randrange(total_bg_images_max_index)],
                                           output_images[img_index], stroke_color, 1.03)
         else:
             stroke.add_img_stroke(model_session, input_images[img_index], output_images[img_index], stroke_color, 1.03)
@@ -88,9 +103,11 @@ def parse_args() -> Any:
     parser = argparse.ArgumentParser(description='Add outline stroking to the human image for appealing visual')
     parser.add_argument('-m', '--model_name', type=str, default='u2net_human_seg',
                         help='key in the supported model name [u2net_human_seg, u2netp]')
-    parser.add_argument('-d', '--input_folder', type=str, default='', help='input directory path.')
-    parser.add_argument('-i', '--input_file', default='sample/me.png',
-                        type=str, help='background image file to be superimposed.')
+    parser.add_argument('-d', '--input_folder', type=str, default='', help='input directory path for human images.')
+    parser.add_argument('-i', '--input_file', default='sample/input/me.png',
+                        type=str, help='input directory path for background images.')
+    parser.add_argument('-g', '--bg_folder', default='',
+                        type=str, help='image file with human to be stroked.')
     parser.add_argument('-b', '--bg_file', default='',
                         type=str, help='image file with human to be stroked.')
     parser.add_argument('-o', '--output_folder', type=str,
