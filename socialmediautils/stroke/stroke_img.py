@@ -135,8 +135,9 @@ def overlay_img_with_bg(base_img: Any, bg_img: Any, stroke_color_img: Any, base_
         cv2.imwrite(os.path.join('debug', 'd004_01_foreground_stroke_image.png'), stroke_img)
         cv2.imwrite(os.path.join('debug', 'd004_02_foreground_human_image.png'), human_img)
         cv2.imwrite(os.path.join('debug', 'd004_03_background_stroke_human_image.png'), stroke_human_img)
-        cv2.imwrite(os.path.join('debug', 'd004_04_background_image_mask.png'), bg_mask)
         cv2.imwrite(os.path.join('debug', 'd004_04_background_image.png'), bg_img)
+        cv2.imwrite(os.path.join('debug', 'd004_04_background_image_mask.png'), bg_mask)
+        cv2.imwrite(os.path.join('debug', 'd004_04_background_filtered_image.png'), bg_img_filtered)
 
     return overlaid_img
 

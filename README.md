@@ -2,10 +2,6 @@
 
  This repo helps editing the images and or videos. There are some utilities available for making social media content look appealing.
 
- [Image stroke feature explanation video in English](https://youtu.be/vCa1K3FmNr8)
-
- [Image stroke feature explanation video in Tamil](https://youtu.be/it19s6FjSRA)
-
 ## Package Name: socialmediautils
 
  This package implements the various utilities for making social media content
@@ -30,8 +26,12 @@ def parse_args() -> Any:
     parser = argparse.ArgumentParser(description='Add outline stroking to the human image for appealing visual')
     parser.add_argument('-m', '--model_name', type=str, default='u2net_human_seg',
                         help='key in the supported model name [u2net_human_seg, u2netp]')
-    parser.add_argument('-d', '--input_folder', type=str, default='sample', help='input directory path.')
-    parser.add_argument('-i', '--input_file', default='sample/me.png',
+    parser.add_argument('-d', '--input_folder', type=str, default='', help='input directory path for human images.')
+    parser.add_argument('-i', '--input_file', default='sample/input/me.png',
+                        type=str, help='input directory path for background images.')
+    parser.add_argument('-g', '--bg_folder', default='',
+                        type=str, help='image file with human to be stroked.')
+    parser.add_argument('-b', '--bg_file', default='',
                         type=str, help='image file with human to be stroked.')
     parser.add_argument('-o', '--output_folder', type=str,
                         default=datetime.now().strftime("%Y%m%d-%H%M%S"), help='CSV data file name with full path.')
@@ -44,3 +44,15 @@ def parse_args() -> Any:
     print('Starting the Application with instance ID:', datetime.now().strftime("%Y%m%d-%H%M%S"))
     return args
 ```
+
+### Outline stroking without background
+
+ [Image stroke feature explanation video in English](https://youtu.be/vCa1K3FmNr8)
+
+ [Image stroke feature explanation video in Tamil](https://youtu.be/it19s6FjSRA)
+
+### Outline stroking with background
+
+ [Image stroke with background feature explanation video in English](https://youtu.be/EgbtBtDpp7c)
+
+ [Image stroke with background feature explanation video in Tamil](https://youtu.be/whchYf6PCDc)
