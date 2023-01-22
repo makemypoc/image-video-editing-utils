@@ -45,13 +45,13 @@ def parse_args() -> Any:
     return args
 ```
 
-### Outline stroking without background
+### Outline stroking without background Videos
 
  [Image stroke feature explanation video in English](https://youtu.be/vCa1K3FmNr8)
 
  [Image stroke feature explanation video in Tamil](https://youtu.be/it19s6FjSRA)
 
-### Outline stroking with background
+### Outline stroking with background Videos
 
  [Image stroke with background feature explanation video in English](https://youtu.be/EgbtBtDpp7c)
 
@@ -93,3 +93,8 @@ def parse_args() -> Any:
     print('Starting the Application with instance ID:', datetime.now().strftime("%Y%m%d-%H%M%S"))
     return args
 ```
+### Face Blurring feature Videos
+
+ [Face Blurring feature explanation video in English](https://youtu.be/XVzuE_qTzUc)
+
+ [Face Blurring feature explanation video in Tamil](https://youtu.be/DTOUF3jUxWA)

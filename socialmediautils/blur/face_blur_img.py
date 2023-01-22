@@ -18,7 +18,7 @@ visual_debug = False
 
 def get_face_parser_model(model_type: str = 'bisenet') -> Any:
     """
-    _summary_
+    This function sets the model during the start and get the session for continuous inference in the later process
 
     :param model_type: Name of the model, i.e., face parsing model is bisenet by default, defaults to 'bisenet'
     :type model_type: str, optional
@@ -48,13 +48,13 @@ def enable_visual_debug_fb(enable: bool) -> None:
 
 def overlay_blurred_face(base_img: Any, face_blur_img: Any, mask: Any) -> Any:
     """
-    It merges the background and the forground based on the orignal, colored and mask image.
+    It merges the background and the forground based on the orignal, face blurred and mask image.
 
     :param base_img: This image is the original image to be processed
     :type base_img: Any
-    :param overlay_img: This is the generated image based on the stroke color
-    :type overlay_img: Any
-    :param mask: This image is the mask image that holds the stroke area
+    :param face_blur_img: This is the blurred input image
+    :type face_blur_img: Any
+    :param mask: This image is the mask image that holds the face mask
     :type mask: Any
     :return: It returns the merged image
     :rtype: Any
@@ -79,21 +79,21 @@ def overlay_blurred_face(base_img: Any, face_blur_img: Any, mask: Any) -> Any:
 
 
 def add_face_blur(net: Any, dev_acc: str, in_file_path: str, out_file_path: str,
-                  blurring_factor: int = 33) -> Any:
+                  blurring_factor: int = 33) -> None:
     """
-    _summary_
+    This function adds the blur to the face using face mask by face parser and blurred input image
 
-    :param net: _description_
+    :param net: This param holds the reference for the face parser net for inference
     :type net: Any
-    :param dev_acc: _description_
+    :param dev_acc: It holds the cuda support if so for doing inference in the GPU, otherwise in CPU
     :type dev_acc: str
-    :param in_file_path: _description_
+    :param in_file_path: The input file with path that has the face in that image
     :type in_file_path: str
-    :param out_file_path: _description_
+    :param out_file_path: The ouptut path with filename to store the processed face blurred image
     :type out_file_path: str
-    :param blurring_factor: _description_, defaults to 33
+    :param blurring_factor: The kernal window size for the blurring filter, defaults to 33
     :type blurring_factor: int, optional
-    :return: _description_
+    :return: Returns the face blurred image in the Original image resolution
     :rtype: Any
     """
     global visual_debug

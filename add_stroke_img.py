@@ -111,7 +111,7 @@ def parse_args() -> Any:
     parser.add_argument('-b', '--bg_file', default='',
                         type=str, help='image file with human to be stroked.')
     parser.add_argument('-o', '--output_folder', type=str,
-                        default=datetime.now().strftime("%Y%m%d-%H%M%S"), help='CSV data file name with full path.')
+                        default=datetime.now().strftime("%Y%m%d-%H%M%S"), help='Folder where the output is stored.')
     parser.add_argument('-c', '--color', type=str, default='yellow', help='Feed the color as per W3C color naming')
     parser.add_argument('-p', '--vdebug', type=bool, default=False, help='storing the debug images in the debug folder')
 

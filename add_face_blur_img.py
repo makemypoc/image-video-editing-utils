@@ -82,7 +82,7 @@ def parse_args() -> Any:
     parser.add_argument('-i', '--input_file', default='sample/input/me.png',
                         type=str, help='input file path for single human face image.')
     parser.add_argument('-o', '--output_folder', type=str,
-                        default=datetime.now().strftime("%Y%m%d-%H%M%S"), help='CSV data file name with full path.')
+                        default=datetime.now().strftime("%Y%m%d-%H%M%S"), help='Folder where the output is stored.')
     parser.add_argument('-b', '--blur_factor', type=int, default=33, help='Feed the blurring factor')
     parser.add_argument('-p', '--vdebug', type=bool, default=False, help='storing the debug images in the debug folder')
 

@@ -1,3 +1,5 @@
 colour==0.1.5
+facexlib==0.2.5
 opencv_python_headless==4.6.0.66
 rembg==2.0.25
+torchvision==0.14.0
